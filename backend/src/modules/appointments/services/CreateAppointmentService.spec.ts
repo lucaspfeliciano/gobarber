@@ -1,15 +1,19 @@
 import AppError from '@shared/errors/AppError';
+import FakeNotificationsRepository from '@modules/notifications/repositories/fakes/FakeNotificationsRepository';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import CreateAppointmentService from './CreateAppointmentService';
 
 let createAppointment: CreateAppointmentService;
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
+let fakeNotificationsRepository: FakeNotificationsRepository;
 
 describe('CreateAppointment', () => {
   beforeEach(() => {
+    fakeNotificationsRepository = new FakeNotificationsRepository();
     fakeAppointmentsRepository = new FakeAppointmentsRepository();
     createAppointment = new CreateAppointmentService(
       fakeAppointmentsRepository,
+      fakeNotificationsRepository,
     );
   });
 
@@ -77,20 +81,6 @@ describe('CreateAppointment', () => {
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
-
-  // it('should not be able to create an appointment with sabe user as provider', async () => {
-  //   jest.spyOn(Date, 'now').mockImplementation(() => {
-  //     return new Date(2020, 5, 10, 12).getTime();
-  //   });
-
-  //   await expect(
-  //     createAppointment.execute({
-  //       date: new Date(2020, 5, 10, 13),
-  //       user_id: '123123',
-  //       provider_id: '123123',
-  //     }),
-  //   ).rejects.toBeInstanceOf(AppError);
-  // });
 
   it('should not be able to create an appointment before 8am and after 5pm', async () => {
     jest.spyOn(Date, 'now').mockImplementation(() => {
